@@ -31,10 +31,15 @@ A simple and elegant weather application built with React, Material-UI, and Type
 
 2. **Install dependencies**:
 
-    ```npm install
+    ```bash
+    npm install
 
 3. **Run the development server**:
 
-    ```npm start
+    ```bash
+    npm start
 
 
+## DEMO
+
+https://weather-app-beta-self.vercel.app/
