@@ -1,26 +1,44 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from "react";
+import Container from "@mui/material/Container";
+import CircularProgress from "@mui/material/CircularProgress";
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
+import SearchInput from "./components/search-input";
+import WeatherCard from "./components/weather-card";
+import { fetchWeatherData } from "./services/weather.service";
+import { useQuery } from "@tanstack/react-query";
+import { WeatherData } from "./types/weather-data";
 
-function App() {
+const App: React.FC = () => {
+  const [city, setCity] = useState<string | null>(null);
+
+  const {
+    data: weatherData,
+    error,
+    isLoading,
+    isError,
+  } = useQuery<WeatherData, Error>({
+    queryKey: ["weather", city],
+    queryFn: () => fetchWeatherData(city as string),
+    enabled: !!city,
+    staleTime: 5 * 60 * 1000,
+    retry: 1,
+  });
+
+  const handleSearch = (city: string) => {
+    setCity(city);
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Container>
+      <SearchInput isDisabled={isLoading} onSearch={handleSearch} />
+      {isLoading && <CircularProgress />}
+      {weatherData && <WeatherCard data={weatherData} />}
+      <Snackbar open={isError} autoHideDuration={6000}>
+        <Alert severity="error">{error?.message}</Alert>
+      </Snackbar>
+    </Container>
   );
-}
+};
 
 export default App;
